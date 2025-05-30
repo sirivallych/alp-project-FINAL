@@ -1,0 +1,249 @@
+/* Main Container */
+.performance-container {
+  padding: 1.25rem;
+  max-width: 2500px;
+  margin: 0 auto;
+}
+
+/* Header Styles */
+.performance-header {
+  margin-bottom: 1.25rem;
+}
+
+.performance-header h1 {
+  color: #1a1a1a;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Content Layout */
+.performance-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Performance Block */
+.performance-block {
+  background: #ffffff5d;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.performance-block h2 {
+  color: #1a1a1a;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.performance-block .performance-content {
+  display: flex;
+  flex-direction: row;
+  gap: 1.25rem;
+}
+
+.performance-block .overall-performance,
+.performance-block .subject-performance {
+  flex: 1;
+}
+
+.performance-block h3 {
+  color: #1a1a1a;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.performance-block h4 {
+  color: #1a1a1a;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+/* Overall Progress Section */
+.overall-progress {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.overall-progress h2 {
+  color: #1a1a1a;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Subject Progress Section */
+.subject-progress {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.subject-progress h2 {
+  color: #1a1a1a;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Chart Containers */
+.chart-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.overall-progress .chart-wrapper,
+.performance-block .overall-performance .chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+}
+
+.subject-progress .chart-wrapper,
+.performance-block .subject-performance .chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
+
+/* Chart Center Text */
+.chart-center-text {
+  font-size: 1.25rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-center-text .percentage {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2563eb;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.chart-center-text .label {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+  line-height: 1;
+}
+
+/* Subject Charts Grid */
+.subject-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.subject-charts-grid::-webkit-scrollbar {
+  display: none;  /* Hide scrollbar for Chrome, Safari */
+}
+
+.subject-charts-grid {
+  -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none;     /* Hide scrollbar for Firefox */
+}
+
+
+/* Subject Chart Cards */
+.subject-chart-card {
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  height: fit-content;
+}
+
+.subject-chart-card h3 {
+  color: #1a1a1a;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.subject-stats {
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+.subject-stats p {
+  color: #64748b;
+  margin: 0.15rem 0;
+  font-size: 0.65rem;
+}
+
+/* Status Messages */
+.loading {
+  text-align: center;
+  padding: 1.25rem;
+  color: #64748b;
+}
+
+.error {
+  text-align: center;
+  padding: 1.25rem;
+  color: #ef4444;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .performance-content {
+    flex-direction: column;
+  }
+
+  .performance-block .performance-content {
+    flex-direction: column;
+  }
+
+  .overall-progress,
+  .subject-progress,
+  .performance-block {
+    width: 100%;
+  }
+
+  .overall-progress .chart-wrapper,
+  .performance-block .overall-performance .chart-wrapper {
+    height: 160px;
+  }
+
+  .subject-charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .performance-container {
+    padding: 0.75rem;
+  }
+
+  .overall-progress .chart-wrapper,
+  .performance-block .overall-performance .chart-wrapper {
+    height: 140px;
+  }
+
+  .subject-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subject-chart-card .chart-wrapper {
+    height: 120px;
+  }
+} 

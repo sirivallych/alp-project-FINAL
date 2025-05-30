@@ -1,0 +1,512 @@
+.therapist-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-card h3 {
+  color: #7f8c8d;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-number {
+  color: #2ecc71;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.assigned-users-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.assigned-users-section h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.no-users {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.user-card {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  background: #e9ecef;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.user-avatar i {
+  font-size: 1.5rem;
+  color: #6c757d;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.user-username {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.user-email {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.assignment-date {
+  color: #95a5a6;
+  font-size: 0.8rem;
+}
+
+.user-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.chat-btn {
+  background: #3498db;
+  color: white;
+}
+
+.chat-btn:hover {
+  background: #2980b9;
+}
+
+.schedule-btn {
+  background: #2ecc71;
+  color: white;
+}
+
+.schedule-btn:hover {
+  background: #27ae60;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #e74c3c;
+  background: #fde8e8;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.therapist-header {
+  background: white;
+  padding: 20px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.therapist-welcome h1 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 2em;
+}
+
+.therapist-welcome p {
+  color: #7f8c8d;
+  margin: 5px 0 0;
+  font-size: 1.1em;
+}
+
+.therapist-profile {
+  position: relative;
+}
+
+.profile-icon {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.1);
+}
+
+.logout-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-top: 10px;
+  z-index: 1000;
+}
+
+.logout-dropdown button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.2s ease;
+}
+
+.logout-dropdown button:hover {
+  background: #c0392b;
+}
+
+.therapist-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.dashboard-card h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.8em;
+}
+
+.dashboard-card p {
+  color: #7f8c8d;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.chat-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.chat-wrapper {
+  width: 90%;
+  max-width: 800px;
+  height: 80vh;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.users-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-card.selected {
+  border: 2px solid #3498db;
+  background: #f8f9fa;
+}
+
+.user-progress-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-stats {
+  margin-top: 1rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.subject-progress {
+  margin-top: 2rem;
+}
+
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.progress-card {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-card h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #3498db;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.progress-details p {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.recent-activity {
+  margin-top: 2rem;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.activity-item:hover {
+  transform: translateX(5px);
+}
+
+.activity-info h4 {
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.activity-info p {
+  color: #6c757d;
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.activity-date {
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.emotion-indicator {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.emotion-indicator.happy {
+  background: #2ecc71;
+  color: white;
+}
+
+.emotion-indicator.sad {
+  background: #e74c3c;
+  color: white;
+}
+
+.emotion-indicator.neutral {
+  background: #95a5a6;
+  color: white;
+}
+
+.emotion-indicator.confused {
+  background: #f1c40f;
+  color: white;
+}
+
+.emotion-indicator.excited {
+  background: #9b59b6;
+  color: white;
+}
+
+.emotion-indicator.angry {
+  background: #c0392b;
+  color: white;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+
+  .users-section {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .emotion-indicator {
+    align-self: flex-start;
+  }
+
+  .therapist-header {
+    padding: 15px 20px;
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .therapist-welcome h1 {
+    font-size: 1.6em;
+  }
+
+  .therapist-content {
+    padding: 0 10px;
+  }
+
+  .chat-wrapper {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .chat-overlay {
+    background: white;
+  }
+} 

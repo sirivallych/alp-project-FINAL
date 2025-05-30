@@ -1,0 +1,51 @@
+body {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top left, 
+    white 0%,
+    #7349ac 77%,
+    #512888 100%
+     
+    
+);
+
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Remove all .auth-*, .login-*, .signup-* styles. Keep only global styles. */
+
+/* Message styles */
+.error-message, .success-message {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.success-message {
+  background-color: #e8f5e9;
+  color: #388e3c;
+  border: 1px solid #c8e6c9;
+}
+
+/* Loading state styles */
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+} 
