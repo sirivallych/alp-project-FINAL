@@ -84,10 +84,12 @@ const Progress = () => {
   return (
     <div className="progress-container">
       <div className="progress-header">
-        <h1>Your Learning Progress</h1>
-        <button className="back-button" onClick={handleBack}>
+        <button className="back-button" onClick={() => navigate('/dashboard')}>
+          <i className="fas fa-arrow-left"></i>
           Back to Dashboard
         </button>
+        <h1>Your Learning Progress</h1>
+        
       </div>
 
       {quizHistory.length === 0 ? (

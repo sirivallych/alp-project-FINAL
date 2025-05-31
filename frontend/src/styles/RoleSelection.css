@@ -1,9 +1,10 @@
 .role-selection-container {
+  /* position: fixed; */
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
   padding: 20px;
 }
 
@@ -15,6 +16,18 @@
   text-align: center;
   max-width: 800px;
   width: 100%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .role-selection-content h1 {
@@ -41,26 +54,49 @@
   min-width: 280px;
   max-width: 350px;
   padding: 30px;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 12px;
   background: white;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.role-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-button:hover::before {
+  transform: translateX(0);
 }
 
 .role-button:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .role-button i {
   font-size: 3em;
   margin-bottom: 20px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-button:hover i {
+  transform: scale(1.1);
 }
 
 .role-button span {
@@ -68,30 +104,44 @@
   font-weight: bold;
   margin-bottom: 10px;
   color: #2c3e50;
+  transition: color 0.3s ease;
 }
 
 .role-button p {
   color: #7f8c8d;
   font-size: 1em;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .user-role i {
   color: #3498db;
+  transition: color 0.3s ease;
 }
 
 .therapist-role i {
   color: #2ecc71;
+  transition: color 0.3s ease;
 }
 
 .user-role:hover {
   background: #f8f9fa;
-  border: 2px solid #3498db;
+  border-color: #3498db;
+}
+
+.user-role:hover i,
+.user-role:hover span {
+  color: #2980b9;
 }
 
 .therapist-role:hover {
   background: #f8f9fa;
-  border: 2px solid #2ecc71;
+  border-color: #2ecc71;
+}
+
+.therapist-role:hover i,
+.therapist-role:hover span {
+  color: #27ae60;
 }
 
 @media (max-width: 768px) {

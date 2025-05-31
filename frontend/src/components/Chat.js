@@ -197,19 +197,25 @@ function Chat({ recipientId, recipientName, onClose }) {
         {messages.length === 0 ? (
           <div className="no-messages">No messages yet. Start the conversation!</div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message._id}
-              className={`message ${message.senderId === localStorage.getItem('userId') ? 'sent' : 'received'}`}
-            >
-              <div className="message-content">
-                {message.content}
+          messages.map((message) => {
+            const currentUserId = localStorage.getItem('userId');
+            const isSentByCurrentUser = currentUserId && message.senderId && 
+              message.senderId.toString() === currentUserId.toString();
+  
+            return (
+              <div
+                key={message._id}
+                className={`message ${isSentByCurrentUser ? 'sent' : 'received'}`}
+              >
+                <div className="message-content">
+                  {message.content}
+                </div>
+                <div className="message-time">
+                  {new Date(message.createdAt).toLocaleTimeString()}
+                </div>
               </div>
-              <div className="message-time">
-                {new Date(message.createdAt).toLocaleTimeString()}
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>

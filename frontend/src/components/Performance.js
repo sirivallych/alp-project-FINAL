@@ -266,8 +266,9 @@ function Performance() {
   return (
     <div className="performance-container">
       <button className="back-to-dashboard-btn" onClick={() => navigate('/dashboard')}>
-        Back to Dashboard
-      </button>
+          <i className="fas fa-arrow-left"></i>
+          Back to Dashboard
+        </button>
       <div className="performance-header">
         <h1>Performance Overview</h1>
       </div>

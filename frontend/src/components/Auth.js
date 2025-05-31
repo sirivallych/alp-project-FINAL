@@ -116,7 +116,7 @@ function Auth() {
     <div className="auth-outer-container">
       <div className="auth-container">
         <h2 className="auth-title">
-          {role === 'therapist' ? 'Therapist ' : ''}
+          {role === 'therapist' ? 'Therapist ' : 'Student '}
           {mode === 'login' ? 'Login' : 'Signup'}
         </h2>
         

@@ -56,18 +56,25 @@
   word-wrap: break-word;
 }
 
+/* Sent messages - Green background */
 .message.sent {
   align-self: flex-end;
-  background: #3498db;
+  background: #4CAF50;
   color: white;
   border-bottom-right-radius: 0.25rem;
+  margin-left: 30%;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
 }
 
+/* Received messages - Light blue background */
 .message.received {
   align-self: flex-start;
-  background: #f1f0f0;
-  color: #2c3e50;
+  background: #E3F2FD;
+  color: #1976D2;
   border-bottom-left-radius: 0.25rem;
+  margin-right: 30%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #BBDEFB;
 }
 
 .message-content {

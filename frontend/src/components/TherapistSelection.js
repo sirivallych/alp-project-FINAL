@@ -144,6 +144,7 @@ function TherapistSelection() {
     return (
       <div className="therapist-selection-container">
         <button className="back-to-dashboard-btn" onClick={() => navigate('/dashboard')}>
+          <i className="fas fa-arrow-left"></i>
           Back to Dashboard
         </button>
         <div className="therapist-selection-error">
@@ -160,6 +161,7 @@ function TherapistSelection() {
     return (
       <div className="therapist-selection-container">
         <button className="back-to-dashboard-btn" onClick={() => navigate('/dashboard')}>
+          <i className="fas fa-arrow-left"></i>
           Back to Dashboard
         </button>
         <div className="assigned-therapist-view">
@@ -192,6 +194,7 @@ function TherapistSelection() {
   return (
     <div className="therapist-selection-container">
       <button className="back-to-dashboard-btn" onClick={() => navigate('/dashboard')}>
+        <i className="fas fa-arrow-left"></i>
         Back to Dashboard
       </button>
       <div className="selection-header">

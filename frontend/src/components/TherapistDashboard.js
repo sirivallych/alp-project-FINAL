@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../config';
 import Chat from './Chat';
+import { useNavigate } from 'react-router-dom';
 import '../styles/TherapistDashboard.css';
 
 function TherapistDashboard() {
+  const navigate = useNavigate();
   const [assignedUsers, setAssignedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,8 +14,10 @@ function TherapistDashboard() {
   const [showChat, setShowChat] = useState(false);
   const [userProgress, setUserProgress] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(false);
+  const [therapistInfo, setTherapistInfo] = useState(null);
 
   useEffect(() => {
+    fetchTherapistInfo();
     fetchAssignedUsers();
   }, []);
 
@@ -22,6 +26,31 @@ function TherapistDashboard() {
       fetchUserProgress(selectedUser.id);
     }
   }, [selectedUser]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userId');
+    navigate('/');
+  };
+
+  const fetchTherapistInfo = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${config.apiBaseUrl}/therapists/profile`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      setTherapistInfo(response.data);
+    } catch (err) {
+      console.error('Error fetching therapist info:', err);
+    }
+  };
 
   const fetchAssignedUsers = async () => {
     try {
@@ -166,12 +195,17 @@ function TherapistDashboard() {
   return (
     <div className="therapist-dashboard">
       <div className="dashboard-header">
-        <h1>Therapist Dashboard</h1>
+        <h1>
+          Welcome, {therapistInfo ? `${therapistInfo.firstName} ${therapistInfo.lastName}` : 'Therapist'}
+        </h1>
         <div className="dashboard-stats">
           <div className="stat-card">
             <h3>Total Assigned Users</h3>
             <p className="stat-number">{assignedUsers.length}</p>
           </div>
+          <button className="logout-btn" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </button>
         </div>
       </div>
 
