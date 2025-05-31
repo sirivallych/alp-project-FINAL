@@ -6,7 +6,7 @@ import config from '../config';
 import '../styles/Dashboard.css';
 import { instructorPlaceholder, coursePlaceholder } from '../assets/images/placeholder';
 import { FaUserCircle } from 'react-icons/fa';
-import TherapistSelection from './TherapistSelection';
+// import TherapistSelection from './TherapistSelection';
 import Chat from './Chat';
 
 function Dashboard() {
@@ -20,7 +20,6 @@ function Dashboard() {
   const [error, setError] = useState(null);
   const [username, setUsername] = useState('');
   const [continueLearning, setContinueLearning] = useState([]);
-  const [showTherapistSelection, setShowTherapistSelection] = useState(false);
   const [selectedTherapist, setSelectedTherapist] = useState(null);
   const [showChat, setShowChat] = useState(false);
 
@@ -165,14 +164,86 @@ function Dashboard() {
     fetchInProgress();
   }, []);
   
-  // Add this useEffect to load selected therapist from localStorage
-  useEffect(() => {
-    const storedTherapist = localStorage.getItem('selectedTherapist');
-    if (storedTherapist) {
-      setSelectedTherapist(JSON.parse(storedTherapist));
+  // Add this useEffect to load selected therapist from server
+  // Add this updated useEffect to your Dashboard component
+// Replace the existing therapist useEffect with this one:
+
+useEffect(() => {
+  const fetchUserTherapist = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      // Try to get from server first
+      try {
+        const response = await axios.get(`${config.apiBaseUrl}/user/therapist`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.data && response.data.therapist) {
+          setSelectedTherapist(response.data.therapist);
+          // Also store in localStorage for consistency
+          localStorage.setItem('selectedTherapist', JSON.stringify(response.data.therapist));
+        }
+      } catch (apiErr) {
+        console.log('API not available, checking localStorage');
+        // Fallback to localStorage if API is not available
+        const storedTherapist = localStorage.getItem('selectedTherapist');
+        if (storedTherapist) {
+          try {
+            const therapist = JSON.parse(storedTherapist);
+            setSelectedTherapist(therapist);
+          } catch (parseErr) {
+            console.error('Error parsing stored therapist:', parseErr);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching user therapist:', err);
     }
-  }, []);
+  };
+
+  fetchUserTherapist();
+}, []); // Empty dependency array
+
+// Also add this useEffect to refresh when coming back from therapist selection:
+useEffect(() => {
+  const handleVisibilityChange = () => {
+    if (!document.hidden) {
+      // Page became visible again, refresh therapist data
+      const fetchUserTherapist = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) return;
+
+          const storedTherapist = localStorage.getItem('selectedTherapist');
+          if (storedTherapist) {
+            try {
+              const therapist = JSON.parse(storedTherapist);
+              setSelectedTherapist(therapist);
+            } catch (parseErr) {
+              console.error('Error parsing stored therapist:', parseErr);
+            }
+          }
+        } catch (err) {
+          console.error('Error refreshing therapist:', err);
+        }
+      };
+      
+      fetchUserTherapist();
+    }
+  };
+
+  document.addEventListener('visibilitychange', handleVisibilityChange);
   
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+  };
+}, []);
+
   // Helper functions to get subject styling
   const getSubjectIcon = (name) => {
     const lowerName = name.toLowerCase();
@@ -272,16 +343,16 @@ function Dashboard() {
   }
 
   const handleChatClick = () => {
-    const therapist = JSON.parse(localStorage.getItem('selectedTherapist'));
-    if (therapist) {
-      setSelectedTherapist(therapist);
-      setShowChat(true);
-    }
+    setShowChat(true);
   };
 
   const handleCloseChat = () => {
     setShowChat(false);
-    setSelectedTherapist(null);
+  };
+
+  // Function to navigate to Therapist Selection
+  const handleTherapistSelectionClick = () => {
+    navigate('/therapist-selection');
   };
 
   return (
@@ -299,10 +370,6 @@ function Dashboard() {
               <i className="fas fa-home"></i>
               <span>Dashboard</span>
             </li>
-            <li>
-              <i className="fas fa-book"></i>
-              <span>My Courses</span>
-            </li>
             <li onClick={() => navigate('/progress')}>
               <i className="fas fa-chart-bar"></i>
               <span>Progress</span>
@@ -311,7 +378,7 @@ function Dashboard() {
               <i className="fas fa-trophy"></i>
               <span>Performance</span>
             </li>
-            <li onClick={() => setShowTherapistSelection(true)}>
+            <li onClick={() => handleTherapistSelectionClick()}>
               <i className="fas fa-user-md"></i>
               <span>Therapist Session</span>
               {selectedTherapist && (
@@ -320,145 +387,126 @@ function Dashboard() {
                 </span>
               )}
             </li>
-            <li>
-              <i className="fas fa-cog"></i>
-              <span>Settings</span>
-            </li>
           </ul>
         </div>
       </div>
 
-      {showTherapistSelection ? (
-        <div className="dashboard-content">
-          <div className="dashboard-header">
-            <button 
-              className="back-button"
-              onClick={() => setShowTherapistSelection(false)}
-            >
-              <i className="fas fa-arrow-left"></i> Back to Dashboard
-            </button>
+      <div className="main-content">
+        <div className="dashboard-header">
+          <div className="search-bar-container">
+            <div className="search-bar">
+              <i className="fas fa-search"></i>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
-          <TherapistSelection />
-        </div>
-      ) : (
-        <div className="main-content">
-          <div className="dashboard-header">
-            <div className="search-bar-container">
-              <div className="search-bar">
-                <i className="fas fa-search"></i>
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+          <div className="user-section">
+            <span className="welcome-message">
+              Welcome, {capitalizeFirstLetter(username)}
+            </span>
+            <div className="user-icon-dropdown">
+              <div className="user-icon" onClick={toggleLogout}>
+                <FaUserCircle size={44} color="#bdbdbd" />
               </div>
-            </div>
-            <div className="user-section">
-              <span className="welcome-message">
-                Welcome, {capitalizeFirstLetter(username)}
-              </span>
-              <div className="user-icon-dropdown">
-                <div className="user-icon" onClick={toggleLogout}>
-                  <FaUserCircle size={44} color="#bdbdbd" />
-                </div>
-                {showLogout && (
-                  <div className="logout-dropdown">
-                    <button onClick={handleLogout}>Logout</button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          <div className="section-header">
-            <h2>Continue Learning</h2>
-          </div>
-          {continueLearning.length > 0 ? (
-            <div className="continue-learning-list">
-              {continueLearning.map((quiz, idx) => (
-                <div className="continue-learning-card" key={quiz.subjectId + quiz.subtopicId}>
-                  <div className="continue-info">
-                    <div className="continue-title">
-                      {quiz.subjectName} - {quiz.subtopicName}
-                    </div>
-                    <div className="continue-level">
-                      Level: {quiz.level}
-                    </div>
-                  </div>
-                  <button className="continue-btn" onClick={() => handleContinueLearning(quiz)}>
-                    Resume Quiz
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="no-continue-learning">
-              No quiz in progress. Start a new quiz to continue learning!
-            </div>
-          )}
-          
-          <div className="section-header">
-            <h2>Subjects</h2>
-            <button className="more-options">
-              <i className="fas fa-ellipsis-h"></i>
-            </button>
-          </div>
-          
-          {isLoading ? (
-            <div className="loading">Loading subjects...</div>
-          ) : error ? (
-            <div className="error">{error}</div>
-          ) : (
-            <div className="subjects-container">
-              {filteredSubjects.length === 0 ? (
-                <div className="no-results">
-                  No subjects found matching "{searchQuery}"
-                </div>
-              ) : (
-                <div className="subjects-grid">
-                  {filteredSubjects.map(subject => (
-                    <div 
-                      key={subject.id} 
-                      className="subject-card" 
-                      style={{ background: subject.background }}
-                      onClick={() => handleSubjectClick(subject)}
-                    >
-                      <div className="subject-content">
-                        <img src={subject.icon} alt={subject.name} />
-                        <h3>{subject.name}</h3>
-                      </div>
-                    </div>
-                  ))}
+              {showLogout && (
+                <div className="logout-dropdown">
+                  <button onClick={handleLogout}>Logout</button>
                 </div>
               )}
             </div>
-          )}
-
-          {selectedTherapist && (
-            <div className="therapist-info-card">
-              <h3>Your Assigned Therapist</h3>
-              <div className="therapist-details">
-                <div className="therapist-avatar">
-                  <i className="fas fa-user-md"></i>
+          </div>
+        </div>
+        
+        <div className="section-header">
+          <h2>Continue Learning</h2>
+        </div>
+        {continueLearning.length > 0 ? (
+          <div className="continue-learning-list">
+            {continueLearning.map((quiz, idx) => (
+              <div className="continue-learning-card" key={quiz.subjectId + quiz.subtopicId}>
+                <div className="continue-info">
+                  <div className="continue-title">
+                    {quiz.subjectName} - {quiz.subtopicName}
+                  </div>
+                  <div className="continue-level">
+                    Level: {quiz.level}
+                  </div>
                 </div>
-                <div className="therapist-info">
-                  <h4>{selectedTherapist.firstName} {selectedTherapist.lastName}</h4>
-                  <p>@{selectedTherapist.username}</p>
-                  <p>{selectedTherapist.email}</p>
-                </div>
-                <button 
-                  className="chat-btn"
-                  onClick={handleChatClick}
-                >
-                  <i className="fas fa-comments"></i> Chat with Therapist
+                <button className="continue-btn" onClick={() => handleContinueLearning(quiz)}>
+                  Resume Quiz
                 </button>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
+        ) : (
+          <div className="no-continue-learning">
+            No quiz in progress. Start a new quiz to continue learning!
+          </div>
+        )}
+        
+        <div className="section-header">
+          <h2>Subjects</h2>
+          <button className="more-options">
+            <i className="fas fa-ellipsis-h"></i>
+          </button>
         </div>
-      )}
+        
+        {isLoading ? (
+          <div className="loading">Loading subjects...</div>
+        ) : error ? (
+          <div className="error">{error}</div>
+        ) : (
+          <div className="subjects-container">
+            {filteredSubjects.length === 0 ? (
+              <div className="no-results">
+                No subjects found matching "{searchQuery}"
+              </div>
+            ) : (
+              <div className="subjects-grid">
+                {filteredSubjects.map(subject => (
+                  <div 
+                    key={subject.id} 
+                    className="subject-card" 
+                    style={{ background: subject.background }}
+                    onClick={() => handleSubjectClick(subject)}
+                  >
+                    <div className="subject-content">
+                      <img src={subject.icon} alt={subject.name} />
+                      <h3>{subject.name}</h3>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
+        {selectedTherapist && (
+          <div className="therapist-info-card">
+            <h3>Your Assigned Therapist</h3>
+            <div className="therapist-details">
+              <div className="therapist-avatar">
+                <i className="fas fa-user-md"></i>
+              </div>
+              <div className="therapist-info">
+                <h4>{selectedTherapist.firstName} {selectedTherapist.lastName}</h4>
+                <p>@{selectedTherapist.username}</p>
+                <p>{selectedTherapist.email}</p>
+              </div>
+              <button 
+                className="chat-btn"
+                onClick={handleChatClick}
+              >
+                <i className="fas fa-comments"></i> Chat 
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
       {showChat && selectedTherapist && (
         <div className="chat-overlay">
           <div className="chat-wrapper">
@@ -470,6 +518,14 @@ function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* {showChat && selectedTherapist && (
+        <Chat 
+          recipientId={selectedTherapist._id}
+          recipientName={`${selectedTherapist.firstName} ${selectedTherapist.lastName}`}
+          onClose={handleCloseChat}
+        />
+      )} */}
     </div>
   );
 }

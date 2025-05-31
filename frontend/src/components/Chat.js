@@ -12,6 +12,15 @@ function Chat({ recipientId, recipientName, onClose }) {
   const messagesEndRef = useRef(null);
   const token = localStorage.getItem('token');
 
+  // Add validation for recipientId
+  useEffect(() => {
+    if (!recipientId) {
+      setError('Invalid recipient ID');
+      setLoading(false);
+      return;
+    }
+  }, [recipientId]);
+
   // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -23,8 +32,15 @@ function Chat({ recipientId, recipientName, onClose }) {
 
   // Fetch chat history
   useEffect(() => {
+    // Don't fetch if recipientId is invalid
+    if (!recipientId || !token) {
+      setLoading(false);
+      return;
+    }
+
     const fetchMessages = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `${config.apiBaseUrl}/chat/${recipientId}`,
           {
@@ -34,7 +50,8 @@ function Chat({ recipientId, recipientName, onClose }) {
             }
           }
         );
-        setMessages(response.data.messages);
+        setMessages(response.data.messages || []);
+        setError(null); // Clear any previous errors
       } catch (err) {
         console.error('Error fetching messages:', err);
         setError(err.response?.data?.message || 'Failed to load messages');
@@ -48,6 +65,11 @@ function Chat({ recipientId, recipientName, onClose }) {
 
   // WebSocket connection
   useEffect(() => {
+    // Don't connect if recipientId or token is invalid
+    if (!recipientId || !token) {
+      return;
+    }
+
     const wsUrl = `wss://alp-therapist-main.onrender.com?token=${token}`;
     const websocket = new WebSocket(wsUrl);
 
@@ -56,10 +78,14 @@ function Chat({ recipientId, recipientName, onClose }) {
     };
 
     websocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'message' && 
-          (data.message.senderId === recipientId || data.message.receiverId === recipientId)) {
-        setMessages(prev => [...prev, data.message]);
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'message' && 
+            (data.message.senderId === recipientId || data.message.receiverId === recipientId)) {
+          setMessages(prev => [...prev, data.message]);
+        }
+      } catch (err) {
+        console.error('Error parsing WebSocket message:', err);
       }
     };
 
@@ -80,7 +106,7 @@ function Chat({ recipientId, recipientName, onClose }) {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !recipientId || !token) return;
 
     try {
       const response = await axios.post(
@@ -102,9 +128,39 @@ function Chat({ recipientId, recipientName, onClose }) {
     }
   };
 
+  // Show error if no recipientId
+  if (!recipientId) {
+    return (
+      <div className="chat-container">
+        <div className="chat-header">
+          <h3>Chat Error</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <div className="chat-error">No recipient selected for chat</div>
+      </div>
+    );
+  }
+
+  // Show error if no token
+  if (!token) {
+    return (
+      <div className="chat-container">
+        <div className="chat-header">
+          <h3>Chat Error</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <div className="chat-error">Please log in to access chat</div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="chat-container">
+        <div className="chat-header">
+          <h3>Chat with {recipientName || 'Loading...'}</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
         <div className="chat-loading">Loading messages...</div>
       </div>
     );
@@ -113,7 +169,19 @@ function Chat({ recipientId, recipientName, onClose }) {
   if (error) {
     return (
       <div className="chat-container">
-        <div className="chat-error">{error}</div>
+        <div className="chat-header">
+          <h3>Chat with {recipientName}</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <div className="chat-error">
+          {error}
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginLeft: '10px', padding: '5px 10px' }}
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -126,19 +194,23 @@ function Chat({ recipientId, recipientName, onClose }) {
       </div>
 
       <div className="messages-container">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className={`message ${message.senderId === localStorage.getItem('userId') ? 'sent' : 'received'}`}
-          >
-            <div className="message-content">
-              {message.content}
+        {messages.length === 0 ? (
+          <div className="no-messages">No messages yet. Start the conversation!</div>
+        ) : (
+          messages.map((message) => (
+            <div
+              key={message._id}
+              className={`message ${message.senderId === localStorage.getItem('userId') ? 'sent' : 'received'}`}
+            >
+              <div className="message-content">
+                {message.content}
+              </div>
+              <div className="message-time">
+                {new Date(message.createdAt).toLocaleTimeString()}
+              </div>
             </div>
-            <div className="message-time">
-              {new Date(message.createdAt).toLocaleTimeString()}
-            </div>
-          </div>
-        ))}
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -158,4 +230,4 @@ function Chat({ recipientId, recipientName, onClose }) {
   );
 }
 
-export default Chat; 
+export default Chat;

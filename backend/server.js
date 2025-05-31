@@ -67,7 +67,7 @@ connectDB()
 
 // Middleware Configuration
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'https://alp-therapist-main.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -1184,6 +1184,37 @@ app.get('/api/therapists/user/:userId/progress', auth, async (req, res) => {
   } catch (error) {
     console.error('Error fetching user progress:', error);
     res.status(500).json({ message: 'Error fetching user progress data' });
+  }
+});
+
+/**
+ * Get Current User's Therapist Endpoint
+ * GET /api/user/therapist
+ * Returns the currently assigned therapist for the logged-in user
+ */
+app.get('/api/user/therapist', auth, async (req, res) => {
+  try {
+    // Only allow users to access this endpoint
+    if (req.user.role !== 'user') {
+      return res.status(403).json({ message: 'Only users can access this endpoint' });
+    }
+
+    const userId = req.user._id;
+
+    // Find active therapist assignment
+    const assignment = await TherapistAssignment.findOne({
+      userId,
+      status: 'active'
+    }).populate('therapistId', 'username email firstName lastName');
+
+    if (!assignment) {
+      return res.json({ therapist: null });
+    }
+
+    res.json({ therapist: assignment.therapistId });
+  } catch (error) {
+    console.error('Error fetching user therapist:', error);
+    res.status(500).json({ message: 'Error fetching user therapist' });
   }
 });
 

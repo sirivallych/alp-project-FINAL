@@ -1,5 +1,5 @@
 const config = {
-  apiBaseUrl: 'https://alp-therapist-main.onrender.com/api'
+  apiBaseUrl: 'http://localhost:5000/api'
 };
 
 export default config; 

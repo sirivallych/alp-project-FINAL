@@ -17,6 +17,7 @@ import Quiz from './components/Quiz';
 import PersonalizedContent from './components/PersonalizedContent';
 import Progress from './components/Progress';
 import Performance from './components/Performance';
+import TherapistSelection from './components/TherapistSelection';
 import './App.css';
 // require('dotenv').config();
 
@@ -93,6 +94,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['user']}>
                 <Performance />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/therapist-selection"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <TherapistSelection />
               </ProtectedRoute>
             }
           />

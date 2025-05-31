@@ -840,6 +840,7 @@
 }
 
 .chat-btn {
+  width: auto;
   background: #3498db;
   color: white;
   border: none;

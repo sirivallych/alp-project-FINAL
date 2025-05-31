@@ -11,6 +11,7 @@ import { Doughnut } from 'react-chartjs-2';
 import axios from 'axios';
 import config from '../config';
 import '../styles/Performance.css';
+import { useNavigate } from 'react-router-dom';
 
 // Register ChartJS components
 ChartJS.register(
@@ -35,6 +36,7 @@ function Performance() {
     averageScore: 0
   });
   const [subjectStats, setSubjectStats] = useState({});
+  const navigate = useNavigate();
 
   // Add performance calculation function
   const calculatePerformanceScore = (level, score) => {
@@ -84,25 +86,35 @@ function Performance() {
           
           // Calculate subject-wise statistics
           const subjectProgress = {};
-          let totalSubtopics = 0;
+          let totalSubtopicsAll = 0; // New variable to count all subtopics across all subjects
           let completedSubtopics = 0;
           let totalPerformanceScore = 0;
           let totalQuizzes = 0;
+
+          // Calculate total number of subtopics first
+          subjectsResponse.data.forEach(subject => {
+            totalSubtopicsAll += subject.subtopics.length;
+          });
 
           subjectsResponse.data.forEach(subject => {
             const subjectQuizzes = quizHistory.filter(
               quiz => quiz.subjectName === subject.name
             );
 
-            // Only process subjects that have been attempted
-            if (subjectQuizzes.length > 0) {
+            // Process all subjects, regardless of whether they have attempted quizzes
+            // if (subjectQuizzes.length > 0) { // Removing this condition
               const subtopicProgress = {};
               let subjectPerformanceScores = [];
+              let subjectCompletedSubtopicsCount = 0; // New variable for subject completed count
 
               subject.subtopics.forEach(subtopic => {
                 const subtopicQuizzes = subjectQuizzes.filter(
                   quiz => quiz.subtopicName === subtopic.name
                 );
+
+                let isCompleted = false; // Default to not completed
+                let highestLevel = 0;
+                let latestScore = 0;
 
                 if (subtopicQuizzes.length > 0) {
                   // Find the highest level achieved for this subtopic
@@ -110,60 +122,64 @@ function Performance() {
                     return (quiz.nextLevel > highest.nextLevel) ? quiz : highest;
                   }, subtopicQuizzes[0]);
 
+                  highestLevel = highestLevelQuiz.nextLevel;
+                  latestScore = highestLevelQuiz.score;
+
                   // Check if subtopic is completed (level 8 with 80%+ score)
-                  const isCompleted = highestLevelQuiz.nextLevel >= 8 && highestLevelQuiz.score >= 80;
-                  
+                  isCompleted = highestLevel >= 8 && latestScore >= 80;
+
                   // Calculate performance scores for each quiz in this subtopic
-                  const subtopicPerformanceScores = subtopicQuizzes.map(quiz => 
+                  const subtopicPerformanceScores = subtopicQuizzes.map(quiz =>
                     calculatePerformanceScore(quiz.nextLevel, quiz.score)
                   );
-                  
+
                   // Add these performance scores to the subject's total
                   subjectPerformanceScores = [...subjectPerformanceScores, ...subtopicPerformanceScores];
-                  
-                  subtopicProgress[subtopic.name] = {
+                }
+
+                subtopicProgress[subtopic.name] = {
                     completed: isCompleted,
-                    level: highestLevelQuiz.nextLevel,
-                    score: highestLevelQuiz.score
+                    level: highestLevel,
+                    score: latestScore
                   };
 
-                  if (isCompleted) {
-                    completedSubtopics++;
-                  }
-                  totalSubtopics++;
+                if (isCompleted) {
+                  completedSubtopics++;
+                  subjectCompletedSubtopicsCount++;
                 }
+                // totalSubtopics++; // Removing this increment
               });
 
               // Calculate subject completion percentage and performance
-              const subjectCompletedSubtopics = Object.values(subtopicProgress).filter(
-                progress => progress.completed
-              ).length;
-              const subjectTotalSubtopics = Object.keys(subtopicProgress).length;
-              
+              // const subjectCompletedSubtopics = Object.values(subtopicProgress).filter( // Removing this line
+              //   progress => progress.completed
+              // ).length; // Removing this line
+              const subjectTotalSubtopics = subject.subtopics.length; // Use total subtopics for the subject
+
               // Calculate subject performance as average of all quiz performance scores
               const subjectAverageScore = subjectPerformanceScores.length > 0
                 ? Math.round(subjectPerformanceScores.reduce((sum, score) => sum + score, 0) / subjectPerformanceScores.length)
                 : 0;
-              
+
               // Add subject's performance scores to the total
               totalPerformanceScore += subjectPerformanceScores.reduce((sum, score) => sum + score, 0);
               totalQuizzes += subjectPerformanceScores.length;
-              
+
               subjectProgress[subject.name] = {
-                completed: subjectCompletedSubtopics,
+                completed: subjectCompletedSubtopicsCount, // Use the new count
                 total: subjectTotalSubtopics,
-                percentage: Math.round((subjectCompletedSubtopics / subjectTotalSubtopics) * 100),
+                percentage: subjectTotalSubtopics > 0 ? Math.round((subjectCompletedSubtopicsCount / subjectTotalSubtopics) * 100) : 0, // Calculate percentage based on total subtopics
                 averageScore: subjectAverageScore,
                 subtopicProgress
               };
-            }
+            // } // Removing this closing brace
           });
           
           setSubjectStats(subjectProgress);
           
           // Calculate overall progress and average score
-          const overallPercentage = totalSubtopics > 0 
-            ? Math.round((completedSubtopics / totalSubtopics) * 100)
+          const overallPercentage = totalSubtopicsAll > 0
+            ? Math.round((completedSubtopics / totalSubtopicsAll) * 100) // Use totalSubtopicsAll for overall progress
             : 0;
           
           const overallAverageScore = totalQuizzes > 0
@@ -171,7 +187,7 @@ function Performance() {
             : 0;
           
           setStats({
-            totalSubtopics: totalSubtopics,
+            totalSubtopics: totalSubtopicsAll, // Use totalSubtopicsAll
             completedSubtopics: completedSubtopics,
             overallProgress: overallPercentage,
             averageScore: overallAverageScore,
@@ -249,6 +265,9 @@ function Performance() {
 
   return (
     <div className="performance-container">
+      <button className="back-to-dashboard-btn" onClick={() => navigate('/dashboard')}>
+        Back to Dashboard
+      </button>
       <div className="performance-header">
         <h1>Performance Overview</h1>
       </div>
