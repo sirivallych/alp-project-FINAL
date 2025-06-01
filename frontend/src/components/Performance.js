@@ -119,14 +119,14 @@ function Performance() {
                 if (subtopicQuizzes.length > 0) {
                   // Find the highest level achieved for this subtopic
                   const highestLevelQuiz = subtopicQuizzes.reduce((highest, quiz) => {
-                    return (quiz.nextLevel > highest.nextLevel) ? quiz : highest;
+                    return (quiz.presentLevel > highest.presentLevel) ? quiz : highest;
                   }, subtopicQuizzes[0]);
 
-                  highestLevel = highestLevelQuiz.nextLevel;
+                  highestLevel = highestLevelQuiz.presentLevel;
                   latestScore = highestLevelQuiz.score;
 
-                  // Check if subtopic is completed (level 8 with 80%+ score)
-                  isCompleted = highestLevel >= 8 && latestScore >= 80;
+                  // Check if subtopic is completed (level 8 with 60%+ score)
+                  isCompleted = highestLevel >= 8 && latestScore >= 60;
 
                   // Calculate performance scores for each quiz in this subtopic
                   const subtopicPerformanceScores = subtopicQuizzes.map(quiz =>
@@ -141,7 +141,7 @@ function Performance() {
                     completed: isCompleted,
                     level: highestLevel,
                     score: latestScore
-                  };
+                };
 
                 if (isCompleted) {
                   completedSubtopics++;
@@ -191,7 +191,7 @@ function Performance() {
             completedSubtopics: completedSubtopics,
             overallProgress: overallPercentage,
             averageScore: overallAverageScore,
-            highestLevel: Math.max(...quizHistory.map(quiz => quiz.nextLevel))
+            highestLevel: Math.max(...quizHistory.map(quiz => quiz.presentLevel))
           });
         }
       } catch (err) {

@@ -7,7 +7,7 @@ const quizResultSchema = new mongoose.Schema({
   },
   emotion: {
     type: String,
-    enum: ['happy', 'sad', 'neutral', 'angry', 'confused', 'excited'],
+    enum: ['happy', 'sad', 'neutral', 'angry',  'surprise'],
     required: true
   },
   presentLevel: {

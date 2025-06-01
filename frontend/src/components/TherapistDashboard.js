@@ -196,7 +196,7 @@ function TherapistDashboard() {
     <div className="therapist-dashboard">
       <div className="dashboard-header">
         <h1>
-          Welcome, {therapistInfo ? `${therapistInfo.firstName} ${therapistInfo.lastName}` : 'Therapist'}
+          Welcome, {therapistInfo ? `${therapistInfo.username}` : 'Therapist'}
         </h1>
         <div className="dashboard-stats">
           <div className="stat-card">

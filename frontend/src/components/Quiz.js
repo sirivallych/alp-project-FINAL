@@ -201,7 +201,7 @@ const Quiz = () => {
     
     // Adjust based on score
     if (score >= 80) {
-      levelChange +=2; // Increase level for high scores
+      levelChange +=1; // Increase level for high scores
     } else if (score < 50) {
       levelChange -= 1; // Decrease level for low scores
     }
@@ -217,10 +217,7 @@ const Quiz = () => {
       case 'angry':
         levelChange -= 1; // Decrease level if angry
         break;
-      case 'confused':
-        levelChange -= 1; // Decrease level if confused
-        break;
-      case 'excited':
+      case 'surprise':
         levelChange += 1; // Increase level if excited
         break;
       // neutral emotion doesn't affect level
@@ -236,101 +233,48 @@ const Quiz = () => {
    * Saves results and updates difficulty level
    */
   const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      const calculatedScore = calculateScore();
-      setScore(calculatedScore);
-      setPresentLevel(currentLevel);
-      localStorage.setItem(`previousLevel_${subtopicId}`, currentLevel);
-      const calculatedNextLevel = calculateNewLevel(currentLevel, calculatedScore, selectedEmotion);
-      setNextLevel(calculatedNextLevel);
-      if (calculatedScore < 60) {
-        setConsecutiveFailures(prev => prev + 1);
-      } else {
-        setConsecutiveFailures(0);
-      }
-      console.log('Submitting quiz with:', { 
-        score: calculatedScore, 
-        emotion: selectedEmotion, 
-        level: calculatedNextLevel
-      });
-      // Save quiz result
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      await axios.post(
-        `${config.apiBaseUrl}/quiz-in-progress/complete`,
-        {
-          subjectId,
-          subtopicId
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      const response = await axios.post(
-        `${config.apiBaseUrl}/subjects/${subjectId}/subtopics/${subtopicId}/quiz-results`,
-        {
-          score: calculatedScore,
-          emotion: selectedEmotion,
-          presentLevel: currentLevel, // The level at which the quiz was taken
-          nextLevel: calculatedNextLevel // The next recommended level
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+  try {
+    setLoading(true);
+    const calculatedScore = calculateScore();
+    setScore(calculatedScore);
+    setPresentLevel(currentLevel);
 
-      console.log('Quiz submission response:', response.data);
-
-      // Update quiz history
-      const updatedHistory = [...quizHistory, {
-        score: calculatedScore,
-        emotion: selectedEmotion,
-        level: calculatedNextLevel
-      }];
-      setQuizHistory(updatedHistory);
-
-      // Check for level-based messages
-      if (calculatedScore >= 80) {
-        if (calculatedNextLevel === 4) {
-          setContentSuggestionMessage('Great job! You\'ve mastered the basics. Time to move on to more challenging concepts!');
-        } else if (calculatedNextLevel === 7) {
-          setContentSuggestionMessage('Excellent progress! You\'re now ready for advanced topics.');
-        } else if (calculatedNextLevel === 8) {
-          setContentSuggestionMessage('Impressive! You\'re tackling complex concepts with ease.');
-        }
-      }
-
-      setShowResults(true);
-    } catch (error) {
-      console.error('Error submitting quiz:', error);
-      let errorMessage = 'Failed to submit quiz results. Please try again.';
-      
-      if (error.response) {
-        const { data } = error.response;
-        errorMessage = data.message || errorMessage;
-        if (data.details) {
-          console.error('Error details:', data.details);
-        }
-      } else if (error.request) {
-        errorMessage = 'Could not connect to the server. Please check your internet connection.';
-      } else {
-        errorMessage = error.message || errorMessage;
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+    if (calculatedScore < 60) {
+      setConsecutiveFailures(prev => prev + 1);
+    } else {
+      setConsecutiveFailures(0);
     }
-  };
+
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found');
+
+    const quizResponse = await axios.get(
+      `${config.apiBaseUrl}/subjects/${subjectId}/subtopics/${subtopicId}/quiz`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          previousScore: calculatedScore,
+          previousEmotion: selectedEmotion,
+          previousLevel: currentLevel
+        }
+      }
+    );
+
+    if (quizResponse.data && quizResponse.data.questions) {
+      setQuestions(quizResponse.data.questions); // Store new questions
+      setCurrentLevel(quizResponse.data.level); // Store new level
+      setShowResults(true);
+    } else {
+      setError('Invalid quiz data received');
+    }
+  } catch (error) {
+    console.error('Error fetching quiz:', error);
+    setError(`Failed to load quiz: ${error.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleReadContent = () => {
     // Reset quiz progress and attempts when reviewing content
@@ -360,66 +304,31 @@ const Quiz = () => {
     return 'Unknown';
   };
 
-  const handleNextQuiz = async () => {
-    if (consecutiveFailures >= 3) {
-      // Show personalized content after 3 failures
-      navigate(`/subjects/${subjectId}/subtopics/${subtopicId}/review`, {
-        state: {
-          quizHistory,
-          currentEmotion: selectedEmotion,
-          subtopicAttempts: subtopicAttempts[subtopicId] || 0,
-          subjectId,
-          subtopicId,
-          subtopicName: subtopic?.name || 'Unknown Topic'
-        }
-      });
-      setConsecutiveFailures(0); // reset after showing content
-      return;
-    }
-    try {
-      setLoading(true);
-      setError(null);
-      setShowResults(false);
-      setScore(null);
-      setSelectedAnswers({});
-      setCurrentQuestion(0);
-      setEmotionDetections([]);
-      setDetectedEmotion(null);
-      setSelectedEmotion('neutral');
-
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
+  const handleNextQuiz = () => {
+  if (consecutiveFailures >= 3) {
+    navigate(`/subjects/${subjectId}/subtopics/${subtopicId}/review`, {
+      state: {
+        quizHistory,
+        currentEmotion: selectedEmotion,
+        subtopicAttempts: subtopicAttempts[subtopicId] || 0,
+        subjectId,
+        subtopicId,
+        subtopicName: subtopic?.name || 'Unknown Topic'
       }
+    });
+    setConsecutiveFailures(0);
+    return;
+  }
 
-      // Use the nextLevel for the next quiz
-      const quizResponse = await axios.get(
-        `${config.apiBaseUrl}/subjects/${subjectId}/subtopics/${subtopicId}/quiz`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          params: {
-            level: nextLevel // <-- use nextLevel here
-          }
-        }
-      );
+  setShowResults(false);
+  setScore(null);
+  setSelectedAnswers({});
+  setCurrentQuestion(0);
+  setEmotionDetections([]);
+  setDetectedEmotion(null);
+  setSelectedEmotion('neutral');
+};
 
-      if (quizResponse.data && quizResponse.data.questions) {
-        setQuestions(quizResponse.data.questions);
-        setCurrentLevel(nextLevel); // <-- update currentLevel for the next quiz
-        setLoading(false);
-      } else {
-        setError('Invalid quiz data received');
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error('Error fetching next quiz:', err);
-      setError(`Failed to load next quiz: ${err.message}`);
-      setLoading(false);
-    }
-  };
 
   const handleTakeBreak = () => {
     setConsecutiveQuizzes(0);

@@ -58,8 +58,7 @@ const Progress = () => {
       sad: '😢',
       angry: '😠',
       neutral: '😐',
-      confused: '😕',
-      excited: '😃'
+      Suprise: '😃'
     };
     return emojis[emotion] || '😐';
   };

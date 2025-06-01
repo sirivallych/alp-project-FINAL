@@ -484,12 +484,9 @@
   color: white;
 }
 
-.emotion-indicator.confused {
-  background: #f1c40f;
-  color: white;
-}
 
-.emotion-indicator.excited {
+
+.emotion-indicator.surprise {
   background: #9b59b6;
   color: white;
 }

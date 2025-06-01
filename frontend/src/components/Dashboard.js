@@ -372,7 +372,7 @@ useEffect(() => {
             </li>
             <li onClick={() => navigate('/progress')}>
               <i className="fas fa-chart-bar"></i>
-              <span>Progress</span>
+              <span>History</span>
             </li>
             <li onClick={() => navigate('/performance')}>
               <i className="fas fa-trophy"></i>

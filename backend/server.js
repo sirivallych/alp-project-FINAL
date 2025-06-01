@@ -79,24 +79,24 @@ app.use(express.json());
  * POST /api/detect-emotion
  * Currently returns mock emotions, to be replaced with actual emotion detection
  */
-app.post('/api/detect-emotion', async (req, res) => {
-  try {
-    const { image } = req.body;
-    if (!image) {
-      return res.status(400).json({ message: 'Image is required' });
-    }
+// app.post('/api/detect-emotion', async (req, res) => {
+//   try {
+//     const { image } = req.body;
+//     if (!image) {
+//       return res.status(400).json({ message: 'Image is required' });
+//     }
 
-    // Mock emotion detection (to be replaced with actual implementation)
-    const emotions = ['happy', 'sad', 'angry', 'neutral', 'confused', 'excited'];
-    const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
+//     // Mock emotion detection (to be replaced with actual implementation)
+//     const emotions = ['happy', 'sad', 'angry', 'neutral',  'surprise'];
+//     const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
     
-    console.log('Detected emotion:', randomEmotion);
-    res.json({ emotion: randomEmotion });
-  } catch (error) {
-    console.error('Error in emotion detection:', error);
-    res.status(500).json({ message: 'Error detecting emotion' });
-  }
-});
+//     console.log('Detected emotion:', randomEmotion);
+//     res.json({ emotion: randomEmotion });
+//   } catch (error) {
+//     console.error('Error in emotion detection:', error);
+//     res.status(500).json({ message: 'Error detecting emotion' });
+//   }
+// });
 
 /**
  * Authentication Middleware
@@ -504,9 +504,9 @@ app.get('/api/subjects/:subjectId/subtopics/:subtopicId/quiz', async (req, res) 
       } else {
         nextLevel = prevLevel;
       }
-      if (previousEmotion === 'confused' || previousEmotion === 'sad') {
+      if ( previousEmotion === 'sad') {
         nextLevel = Math.max(nextLevel - 1, 1);
-      } else if (previousEmotion === 'excited' || previousEmotion === 'happy') {
+      } else if (previousEmotion === 'surprise' || previousEmotion === 'happy') {
         nextLevel = Math.min(nextLevel + 1, 10);
       }
     }
